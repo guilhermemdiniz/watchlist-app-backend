@@ -4,6 +4,7 @@ import { Schema, model, Document, Types } from 'mongoose';
 export interface IWatchlistMovieItem {
   _id?: Types.ObjectId;
   movie: Types.ObjectId;
+  title: string;
   addedBy: Types.ObjectId;
   addedAt: Date;
   watched: boolean;
@@ -20,12 +21,14 @@ export interface IWatchlist extends Document {
   collaborators: Types.ObjectId[];
   allowedTags: string[];
   movies: IWatchlistMovieItem[];
+  status: 'active' | 'excluded';
   createdAt: Date;
   updatedAt: Date;
 }
 
 const WatchlistMovieItemSchema = new Schema<IWatchlistMovieItem>({
   movie: { type: Schema.Types.ObjectId, ref: 'Movie', required: true },
+  title: { type: String, required: true },
   addedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   addedAt: { type: Date, default: Date.now },
   watched: { type: Boolean, default: false },
@@ -43,6 +46,12 @@ const WatchlistSchema = new Schema<IWatchlist>(
     collaborators: [{ type: Schema.Types.ObjectId, ref: 'User', index: true }],
     allowedTags: [{ type: String, trim: true }],
     movies: [WatchlistMovieItemSchema],
+    status: {
+      type: String,
+      enum: ['active', 'excluded'],
+      default: 'active',
+      index: true,
+    },
   },
   { timestamps: true }
 );

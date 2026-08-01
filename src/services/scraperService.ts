@@ -75,19 +75,27 @@ export const scrapeLetterboxdFastPreview = async (url: string): Promise<ScrapedM
 
     const $ = cheerio.load(data);
 
-    const title = $('meta[property="og:title"]').attr('content') || '';
+    // Extração do título limpo
+    const rawTitle = $('meta[property="og:title"]').attr('content') || '';
+    const cleanTitle = rawTitle.split(' - ')[0].trim();
+
+    // Extração direta de og:description
     const description = $('meta[property="og:description"]').attr('content') || '';
 
-    let coverUrl = $('meta[name="twitter:image"]').attr('content') || '';
-    const backdropElement = $('.backdrop-wrapper');
-    if (backdropElement.length > 0) {
-      const backdropStyle = backdropElement.attr('style') || '';
-      const match = backdropStyle.match(/url\(['"]?(.*?)['"]?\)/);
-      if (match && match[1]) {
-        coverUrl = match[1];
+    // Extração de coverUrl diretamente de og:image
+    const coverUrl = $('meta[property="og:image"]').attr('content') || '';
+
+    // Extração do rating a partir de twitter:data2 (ex: "3.96 out of 5")
+    const ratingContent = $('meta[name="twitter:data2"]').attr('content') || '';
+    let rating: number | undefined = undefined;
+    if (ratingContent) {
+      const parsedRating = parseFloat(ratingContent);
+      if (!isNaN(parsedRating)) {
+        rating = parsedRating;
       }
     }
 
+    // Extração dos gêneros
     const genres: string[] = [];
     $('#tab-panel-genres .text-sluglist a.text-slug[href*="genre"]').each((_, el) => {
       const genre = $(el).text().trim();
@@ -95,17 +103,6 @@ export const scrapeLetterboxdFastPreview = async (url: string): Promise<ScrapedM
         genres.push(genre);
       }
     });
-
-    const ratingContent = $('meta[name="twitter:data2"]').attr('content') || '';
-    let rating: number | undefined = undefined;
-    if (ratingContent) {
-      const match = ratingContent.match(/^(\d+(\.\d+)?)/);
-      if (match) {
-        rating = parseFloat(match[1]);
-      }
-    }
-
-    const cleanTitle = title.split(' - ')[0];
 
     // 3. Extract poster directly from Letterboxd poster endpoint
     let posterUrl = '';
@@ -126,9 +123,14 @@ export const scrapeLetterboxdFastPreview = async (url: string): Promise<ScrapedM
           posterUrl = posterResponse.data.url2x || posterResponse.data.url || '';
         }
       } catch (posterError) {
-        // Fallback to og:image if poster endpoint is unavailable
-        posterUrl = $('meta[property="og:image"]').attr('content') || '';
+        // Fallback to coverUrl if poster endpoint fails
+        posterUrl = coverUrl;
       }
+    }
+
+    // Fallback final para o posterUrl caso a API do poster não retorne
+    if (!posterUrl) {
+      posterUrl = coverUrl;
     }
 
     // 4. Save/Update record in MongoDB

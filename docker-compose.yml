@@ -5,11 +5,14 @@ services:
       - "3333:3333"
     volumes:
       - .:/app
-      - /app/node_modules # Impede que o volume local sobrescreva os modulos do container
+      - backend_node_modules:/app/node_modules
     environment:
-      - PORT=3333
-      - MONGO_URI=mongodb://db:27017/watchlist
-      - JWT_SECRET=super_secret_key_change_in_production
+      - PORT=${PORT}
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
+      - SUPABASE_SECRET_KEY=${SUPABASE_SECRET_KEY}
+      - SUPABASE_STORAGE_BUCKET=${SUPABASE_STORAGE_BUCKETZ}
     depends_on:
       - db
 
@@ -22,3 +25,4 @@ services:
 
 volumes:
   mongo_data:
+  backend_node_modules:
