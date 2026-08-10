@@ -1,16 +1,16 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { ZodError } from "zod";
 import { updateUserSchema } from "../schemas/userSchema";
 import { updateProfile as updateUserService } from "../services/userService";
+import { AuthRequest } from "../middlewares/authMiddleware";
 
 /**
  * Controller da rota PUT /api/user
  */
 export const updateProfile = async (
-    req: Request,
+    req: AuthRequest,
     res: Response
 ): Promise<Response> => {
-    console.log("updateProfile")
     try {
         // 1. Garante que o usuário está autenticado
         const authenticatedUserId = req.userId || "";

@@ -13,16 +13,6 @@ services:
       - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
       - SUPABASE_SECRET_KEY=${SUPABASE_SECRET_KEY}
       - SUPABASE_STORAGE_BUCKET=${SUPABASE_STORAGE_BUCKETZ}
-    depends_on:
-      - db
-
-  db:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
 
 volumes:
-  mongo_data:
   backend_node_modules:

@@ -53,7 +53,7 @@ export const scrapeLetterboxdFastPreview = async (url: string): Promise<ScrapedM
   const cachedMovie = await Movie.findOne({ sourceUrl: canonicalUrl });
   if (cachedMovie && cachedMovie.posterUrl && cachedMovie.posterUrl.trim() !== '') {
     return {
-      _id: (cachedMovie._id as string).toString(),
+      _id: cachedMovie._id.toString(),
       title: cachedMovie.title,
       description: cachedMovie.description || '',
       posterUrl: cachedMovie.posterUrl,
@@ -151,7 +151,7 @@ export const scrapeLetterboxdFastPreview = async (url: string): Promise<ScrapedM
     );
 
     return {
-      _id: (updatedMovie._id as string).toString(),
+      _id: updatedMovie._id.toString(),
       title: updatedMovie.title,
       description: updatedMovie.description || '',
       posterUrl: updatedMovie.posterUrl || '',

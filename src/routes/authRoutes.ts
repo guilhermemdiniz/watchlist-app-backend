@@ -226,7 +226,7 @@ router.post('/login', async (req: Request, res: Response) => {
       $or: [{ email: cleanLogin }, { username: cleanLogin }],
     });
 
-    if (!user) {
+    if (!user || !user.password) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
