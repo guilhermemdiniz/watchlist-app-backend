@@ -10,10 +10,12 @@ export const connectDB = async () => {
   }
 
   const mongoUri = process.env.MONGO_URI;
-
+  
   if (!mongoUri) {
     throw new Error('A variável de ambiente MONGO_URI não está definida.');
   }
+  
+  console.log("STRING RECEBIDA NA VERCEL:", JSON.stringify(mongoUri.replace(/:([^@]+)@/, ":****@")));
 
   try {
     const db = await mongoose.connect(mongoUri);
