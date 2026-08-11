@@ -148,7 +148,7 @@ const extractSchema = z.object({
  *       401:
  *         description: Unauthorized
  */
-router.post('/extract', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/extract', async (req: AuthRequest, res: Response) => {
   try {
     const { url } = extractSchema.parse(req.body);
     const data = await scrapeLetterboxdFastPreview(url);
