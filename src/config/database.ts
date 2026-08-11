@@ -26,7 +26,8 @@ export const connectDB = async () => {
     isConnected = db.connections[0].readyState === 1;
     console.log('🚀 Conectado com sucesso ao MongoDB');
   } catch (error) {
-    console.error('❌ Erro ao conectar no MongoDB:', error);
+    // console.error('❌ Erro ao conectar no MongoDB:', error);
+    console.error('❌ [CODIGO-NOVO] Erro ao conectar no MongoDB:', error);
     // 2. Lançar o erro para interromper a requisição corretamente
     throw error;
   }
