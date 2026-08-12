@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { Watchlist } from '../models/Watchlist';
 import { Movie } from '../models/Movie';
 import { authMiddleware, AuthRequest } from '../middlewares/authMiddleware';
+import { generateShareLink, getWatchlistByToken, joinWatchlist } from '../controllers/watchlistController';
 
 const router = Router();
 
@@ -368,5 +369,69 @@ router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) =>
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+/**
+ * @openapi
+ * /api/watchlists/{id}/share:
+ *   post:
+ *     summary: Gera o link de compartilhamento da watchlist
+ *     tags: [Watchlists]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Link gerado com sucesso
+ *       403:
+ *         description: Não autorizado
+ */
+router.post('/:id/share', authMiddleware, generateShareLink);
+
+/**
+ * @openapi
+ * /api/watchlists/share/{token}:
+ *   get:
+ *     summary: Retorna os dados da watchlist pelo token de compartilhamento (Preview)
+ *     tags: [Watchlists]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Detalhes da watchlist para convite
+ *       404:
+ *         description: Convite não encontrado
+ */
+router.get('/share/:token', getWatchlistByToken);
+
+/**
+ * @openapi
+ * /api/watchlists/share/{token}/join:
+ *   post:
+ *     summary: Adiciona o usuário logado como colaborador via token
+ *     tags: [Watchlists]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Adicionado como colaborador com sucesso
+ *       400:
+ *         description: Usuário já é dono ou erro na requisição
+ */
+router.post('/share/:token/join', authMiddleware, joinWatchlist);
 
 export default router;

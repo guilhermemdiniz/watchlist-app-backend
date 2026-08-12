@@ -22,6 +22,7 @@ export interface IWatchlist extends Document {
   allowedTags: string[];
   movies: IWatchlistMovieItem[];
   status: 'active' | 'excluded';
+  shareToken?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,6 +47,7 @@ const WatchlistSchema = new Schema<IWatchlist>(
     collaborators: [{ type: Schema.Types.ObjectId, ref: 'User', index: true }],
     allowedTags: [{ type: String, trim: true }],
     movies: [WatchlistMovieItemSchema],
+    shareToken: { type: String, default: null },
     status: {
       type: String,
       enum: ['active', 'excluded'],
