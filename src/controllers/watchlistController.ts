@@ -62,6 +62,11 @@ export const joinWatchlist = async (req: AuthRequest, res: Response) => {
     return res.status(400).json({ message: 'Você já é o proprietário desta watchlist' });
   }
 
+  // Impede que um usuário se adicione como colaborador mais de uma vez
+  if (userId && watchlist.collaborators.map(String).includes(userId)) {
+    return res.status(400).json({ message: 'Você já é um colaborador desta watchlist' });
+  }
+
   // $addToSet evita duplicatas no array do MongoDB nativamente
   await Watchlist.updateOne(
     { _id: watchlist._id },
